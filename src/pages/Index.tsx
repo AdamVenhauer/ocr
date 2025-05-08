@@ -12,12 +12,14 @@ const Index = () => {
   const [image, setImage] = useState<File | null>(null);
   const [imageUrl, setImageUrl] = useState<string>('');
   const [extractedText, setExtractedText] = useState<string>('');
+  const [confidence, setConfidence] = useState<number | undefined>(undefined);
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
   const { toast } = useToast();
 
   const handleImageUpload = async (imageFile: File) => {
     // Reset states for new upload
     setExtractedText('');
+    setConfidence(undefined);
     setIsProcessing(true);
     
     // Create URL for image preview
@@ -29,6 +31,7 @@ const Index = () => {
       // Process image with OCR
       const result = await processImageWithOcr(imageFile);
       setExtractedText(result.text);
+      setConfidence(result.confidence);
       
       toast({
         title: "Text extraction complete",
@@ -53,6 +56,7 @@ const Index = () => {
     setImage(null);
     setImageUrl('');
     setExtractedText('');
+    setConfidence(undefined);
     setIsProcessing(false);
   };
 
@@ -93,7 +97,10 @@ const Index = () => {
                   </div>
                 )}
                 
-                <ResultText text={extractedText} />
+                <ResultText 
+                  text={extractedText} 
+                  confidence={confidence}
+                />
                 
                 <div className="flex justify-center">
                   <button

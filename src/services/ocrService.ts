@@ -1,6 +1,5 @@
 
-// This is a mock service for OCR functionality
-// In a real application, you would integrate with an actual OCR API
+import { createWorker } from 'tesseract.js';
 
 export interface OcrResult {
   text: string;
@@ -8,23 +7,29 @@ export interface OcrResult {
 }
 
 /**
- * Process an image and extract text using OCR
- * In a real app, this would call a real OCR API like Tesseract.js or a cloud service
+ * Process an image and extract text using Tesseract.js OCR
  */
 export const processImageWithOcr = async (imageFile: File): Promise<OcrResult> => {
-  return new Promise((resolve) => {
-    // Simulate processing time
-    const processingTime = Math.random() * 2000 + 1000;
+  try {
+    // Create a worker
+    const worker = await createWorker('eng');
     
-    setTimeout(() => {
-      // This is just a mock result
-      // In a real app, this would be the actual OCR result
-      const mockResult: OcrResult = {
-        text: "This is sample extracted text from your image.\n\nIn a real application, this text would be extracted using an OCR engine like Tesseract.js or a cloud OCR API service.\n\nYou can replace this mock service with a real OCR implementation later.",
-        confidence: 0.95,
-      };
-      
-      resolve(mockResult);
-    }, processingTime);
-  });
+    // Convert file to data URL for processing
+    const imageUrl = URL.createObjectURL(imageFile);
+    
+    // Recognize text in the image
+    const { data } = await worker.recognize(imageUrl);
+    
+    // Cleanup
+    URL.revokeObjectURL(imageUrl);
+    await worker.terminate();
+    
+    return {
+      text: data.text || "No text was detected in the image.",
+      confidence: data.confidence / 100, // Convert to 0-1 scale
+    };
+  } catch (error) {
+    console.error("OCR processing error:", error);
+    throw new Error("Failed to process image with OCR");
+  }
 };

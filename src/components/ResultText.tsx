@@ -2,13 +2,14 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { Copy, Check } from 'lucide-react';
+import { Copy, Check, FileText } from 'lucide-react';
 
 interface ResultTextProps {
   text: string;
+  confidence?: number;
 }
 
-const ResultText: React.FC<ResultTextProps> = ({ text }) => {
+const ResultText: React.FC<ResultTextProps> = ({ text, confidence }) => {
   const { toast } = useToast();
   const [isCopied, setIsCopied] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
@@ -23,7 +24,6 @@ const ResultText: React.FC<ResultTextProps> = ({ text }) => {
       setIsCopied(true);
       toast({
         title: "Text copied to clipboard",
-        // Changed from "success" to "default" as the toast component only accepts "default" or "destructive"
         variant: "default",
       });
       setTimeout(() => setIsCopied(false), 2000);
@@ -41,7 +41,15 @@ const ResultText: React.FC<ResultTextProps> = ({ text }) => {
   return (
     <div className={`rounded-lg border border-gray-200 bg-white p-4 shadow-sm animate-fade-in`}>
       <div className="mb-2 flex items-center justify-between">
-        <h3 className="text-lg font-medium text-gray-800">Extracted Text</h3>
+        <div className="flex items-center gap-2">
+          <FileText className="h-5 w-5 text-blue-500" />
+          <h3 className="text-lg font-medium text-gray-800">Extracted Text</h3>
+          {confidence !== undefined && (
+            <span className="ml-2 rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-800">
+              {Math.round(confidence * 100)}% confidence
+            </span>
+          )}
+        </div>
         <Button
           variant="ghost"
           size="sm"
