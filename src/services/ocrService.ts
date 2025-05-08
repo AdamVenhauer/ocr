@@ -13,7 +13,7 @@ export type OcrLanguage = "eng" | "ces" | "deu" | "fra" | "spa" | "ita" | "por" 
  */
 export const processImageWithOcr = async (
   imageFile: File, 
-  language: OcrLanguage = "eng"
+  language: OcrLanguage = "ces"
 ): Promise<OcrResult> => {
   try {
     // Create a worker with specified language
