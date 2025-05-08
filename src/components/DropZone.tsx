@@ -1,5 +1,5 @@
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { Upload, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -12,6 +12,7 @@ interface DropZoneProps {
 const DropZone: React.FC<DropZoneProps> = ({ onImageUpload, className }) => {
   const [isDragging, setIsDragging] = useState<boolean>(false);
   const { toast } = useToast();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   
   const handleDragEnter = useCallback((e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -75,6 +76,11 @@ const DropZone: React.FC<DropZoneProps> = ({ onImageUpload, className }) => {
     onImageUpload(file);
   };
 
+  const handleSelectImageClick = () => {
+    // Programmatically click the hidden file input
+    fileInputRef.current?.click();
+  };
+
   return (
     <div 
       className={`relative flex flex-col items-center justify-center rounded-lg border-2 border-dashed transition-all ${
@@ -109,21 +115,21 @@ const DropZone: React.FC<DropZoneProps> = ({ onImageUpload, className }) => {
         
         <input
           id="file-upload"
+          ref={fileInputRef}
           type="file"
           className="hidden"
           accept="image/*"
           onChange={handleFileInputChange}
         />
-        <label htmlFor="file-upload">
-          <Button 
-            variant="outline" 
-            className="cursor-pointer border-blue-500 text-blue-500 hover:bg-blue-50"
-            onClick={(e) => e.stopPropagation()}
-            type="button"
-          >
-            Select Image
-          </Button>
-        </label>
+        
+        <Button 
+          variant="outline" 
+          className="cursor-pointer border-blue-500 text-blue-500 hover:bg-blue-50"
+          onClick={handleSelectImageClick}
+          type="button"
+        >
+          Select Image
+        </Button>
       </div>
     </div>
   );
