@@ -6,13 +6,18 @@ export interface OcrResult {
   confidence: number;
 }
 
+export type OcrLanguage = "eng" | "ces" | "deu" | "fra" | "spa" | "ita" | "por" | "rus" | "pol" | "ukr" | "slk";
+
 /**
  * Process an image and extract text using Tesseract.js OCR
  */
-export const processImageWithOcr = async (imageFile: File): Promise<OcrResult> => {
+export const processImageWithOcr = async (
+  imageFile: File, 
+  language: OcrLanguage = "eng"
+): Promise<OcrResult> => {
   try {
-    // Create a worker
-    const worker = await createWorker('eng');
+    // Create a worker with specified language
+    const worker = await createWorker(language);
     
     // Convert file to data URL for processing
     const imageUrl = URL.createObjectURL(imageFile);
@@ -33,3 +38,18 @@ export const processImageWithOcr = async (imageFile: File): Promise<OcrResult> =
     throw new Error("Failed to process image with OCR");
   }
 };
+
+// Language name mapping for display
+export const languageOptions = [
+  { value: "eng", label: "English" },
+  { value: "ces", label: "Czech" },
+  { value: "slk", label: "Slovak" },
+  { value: "deu", label: "German" },
+  { value: "fra", label: "French" },
+  { value: "spa", label: "Spanish" },
+  { value: "ita", label: "Italian" },
+  { value: "por", label: "Portuguese" },
+  { value: "rus", label: "Russian" },
+  { value: "pol", label: "Polish" },
+  { value: "ukr", label: "Ukrainian" },
+];

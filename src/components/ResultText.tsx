@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { Copy, Check, FileText } from 'lucide-react';
+import { Copy, Check, FileText, Download } from 'lucide-react';
 
 interface ResultTextProps {
   text: string;
@@ -36,6 +36,31 @@ const ResultText: React.FC<ResultTextProps> = ({ text, confidence }) => {
     }
   };
 
+  const handleDownloadClick = () => {
+    try {
+      const blob = new Blob([text], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'extracted-text.txt';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      
+      toast({
+        title: "Text downloaded as file",
+        variant: "default",
+      });
+    } catch (err) {
+      toast({
+        title: "Failed to download text",
+        description: "Please try again",
+        variant: "destructive",
+      });
+    }
+  };
+
   if (!isVisible) return null;
 
   return (
@@ -50,24 +75,36 @@ const ResultText: React.FC<ResultTextProps> = ({ text, confidence }) => {
             </span>
           )}
         </div>
-        <Button
-          variant="ghost"
-          size="sm"
-          className="text-xs text-gray-500 hover:text-blue-500"
-          onClick={handleCopyClick}
-        >
-          {isCopied ? (
-            <>
-              <Check className="mr-1 h-4 w-4" />
-              Copied
-            </>
-          ) : (
-            <>
-              <Copy className="mr-1 h-4 w-4" />
-              Copy Text
-            </>
-          )}
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-xs text-gray-500 hover:text-blue-500"
+            onClick={handleCopyClick}
+          >
+            {isCopied ? (
+              <>
+                <Check className="mr-1 h-4 w-4" />
+                Copied
+              </>
+            ) : (
+              <>
+                <Copy className="mr-1 h-4 w-4" />
+                Copy Text
+              </>
+            )}
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-xs text-gray-500 hover:text-blue-500"
+            onClick={handleDownloadClick}
+            disabled={!text}
+          >
+            <Download className="mr-1 h-4 w-4" />
+            Download
+          </Button>
+        </div>
       </div>
       <div className="max-h-60 overflow-y-auto rounded border border-gray-200 bg-gray-50 p-3">
         {text ? (

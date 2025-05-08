@@ -4,7 +4,8 @@ import Navbar from '@/components/Navbar';
 import DropZone from '@/components/DropZone';
 import ImagePreview from '@/components/ImagePreview';
 import ResultText from '@/components/ResultText';
-import { processImageWithOcr } from '@/services/ocrService';
+import LanguageSelector from '@/components/LanguageSelector';
+import { processImageWithOcr, OcrLanguage } from '@/services/ocrService';
 import { useToast } from '@/hooks/use-toast';
 import { Scan } from 'lucide-react';
 
@@ -14,6 +15,7 @@ const Index = () => {
   const [extractedText, setExtractedText] = useState<string>('');
   const [confidence, setConfidence] = useState<number | undefined>(undefined);
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
+  const [language, setLanguage] = useState<OcrLanguage>('eng');
   const { toast } = useToast();
 
   const handleImageUpload = async (imageFile: File) => {
@@ -28,8 +30,8 @@ const Index = () => {
     setImageUrl(url);
     
     try {
-      // Process image with OCR
-      const result = await processImageWithOcr(imageFile);
+      // Process image with OCR using selected language
+      const result = await processImageWithOcr(imageFile, language);
       setExtractedText(result.text);
       setConfidence(result.confidence);
       
@@ -60,6 +62,14 @@ const Index = () => {
     setIsProcessing(false);
   };
 
+  const handleLanguageChange = (newLanguage: OcrLanguage) => {
+    setLanguage(newLanguage);
+    // Re-process image if one is already loaded
+    if (image) {
+      handleImageUpload(image);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
@@ -76,12 +86,28 @@ const Index = () => {
 
           <div className="space-y-6">
             {!image ? (
-              <DropZone 
-                onImageUpload={handleImageUpload}
-                className="h-64 sm:h-80" 
-              />
+              <>
+                <div className="mb-4">
+                  <LanguageSelector 
+                    value={language}
+                    onChange={setLanguage}
+                  />
+                </div>
+                <DropZone 
+                  onImageUpload={handleImageUpload}
+                  className="h-64 sm:h-80" 
+                />
+              </>
             ) : (
               <div className="space-y-6">
+                <div className="mb-4">
+                  <LanguageSelector 
+                    value={language}
+                    onChange={handleLanguageChange}
+                    disabled={isProcessing}
+                  />
+                </div>
+                
                 <ImagePreview 
                   imageUrl={imageUrl}
                   isProcessing={isProcessing}
