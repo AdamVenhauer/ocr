@@ -77,7 +77,7 @@ const Index = () => {
         <div className="mx-auto max-w-3xl">
           <div className="mb-8 text-center">
             <h1 className="text-3xl font-bold text-gray-900 sm:text-4xl">
-              Image Text Extractor
+              OCR
             </h1>
             <p className="mt-3 text-lg text-gray-600">
               Upload an image to extract text using OCR technology
