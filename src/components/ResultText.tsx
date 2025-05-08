@@ -23,7 +23,8 @@ const ResultText: React.FC<ResultTextProps> = ({ text }) => {
       setIsCopied(true);
       toast({
         title: "Text copied to clipboard",
-        variant: "success",
+        // Changed from "success" to "default" as the toast component only accepts "default" or "destructive"
+        variant: "default",
       });
       setTimeout(() => setIsCopied(false), 2000);
     } catch (err) {
